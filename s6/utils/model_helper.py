@@ -5,7 +5,12 @@ from tqdm import tqdm
 
 from utils.plot_helper import plot_accuracy, plot_loss, plot_acc_loss
 
-def train_model(model, device, train_loader, optimizer, epoch):
+def l1_penalty(x):
+    #L1 regularization adds an L1 penalty equal
+    #to the absolute value of the magnitude of coefficients
+    return torch.abs(x).sum()
+
+def train_model(model, device, train_loader, optimizer, epoch, enable_l1_loss = False, l1_weight = 0.0001):
     model.train()
     train_loss = 0
     train_correct = 0
@@ -15,7 +20,16 @@ def train_model(model, device, train_loader, optimizer, epoch):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+
+        if enable_l1_loss:
+            to_reg = []
+            for param in model.parameters():
+                to_reg.append(param.view(-1))
+            l1 = l1_weight*l1_penalty(torch.cat(to_reg))
+        else:
+            l1 = 0
+
+        loss = F.nll_loss(output, target) + l1
 
         pred_train = output.argmax(dim=1, keepdim=True)
         train_correct += pred_train.eq(target.view_as(pred_train)).sum().item()
@@ -53,25 +67,23 @@ def test_model(model, device, test_loader, epoch=1):
 
     return test_acc, test_loss
 
-def train_n_test(model, optimizer, scheduler, device, train_data_loader, test_data_loader, num_epochs=10):
+def train_n_test(model, optimizer, scheduler, device, train_data_loader, test_data_loader, num_epochs=10, enable_l1_loss= False, l1_weight=0.0001):
   train_acc_history = []
   train_loss_history = []
   val_acc_history = []
   val_loss_history = []
 
   for epoch in range(1, num_epochs+1):
-      train_acc, train_loss = train_model(model, device, train_data_loader, optimizer, epoch)
+      train_acc, train_loss = train_model(model, device, train_data_loader, optimizer, epoch, enable_l1_loss, l1_weight)
       train_acc_history.append(train_acc)
       train_loss_history.append(train_loss)
 
-      print('LR:', scheduler.get_lr())
-      scheduler.step()
+      if scheduler is not None:
+        print('LR:', scheduler.get_lr())
+        scheduler.step()
 
       val_acc, val_loss = test_model(model, device, test_data_loader, epoch)
       val_acc_history.append(val_acc)
       val_loss_history.append(val_loss)
 
-  # plot_accuracy(train_acc_history, val_acc_history)
-  # plot_loss(train_loss_history, val_loss_history)
-  plot_acc_loss(train_acc_history, val_acc_history,train_loss_history,val_loss_history )
   return ([(train_acc_history, train_loss_history),(val_acc_history, val_loss_history)])

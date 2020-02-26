@@ -1,20 +1,38 @@
+import numpy as np
+
 from matplotlib import pyplot as plt
 
-def plot_acc_loss(train_acc_history, test_acc_history, train_loss_history, test_loss_history):
+def plot_acc_loss(train_acc_series, test_acc_series, train_loss_series, test_loss_series):
   fig, axs = plt.subplots(2,2,figsize=(15,10))
   fig.suptitle("Training & Validation")
 
-  axs[0, 0].plot(train_acc_history)
+  for line in train_acc_series.items():
+    axs[0, 0].plot(line[1], label=line[0])
   axs[0, 0].set_title("Training Accuracy")
+  axs[0, 0].set_xlabel("Epoch")
+  axs[0, 0].set_ylabel("Accuracy")
+  axs[0, 0].legend()
 
-  axs[0, 1].plot(train_loss_history)
+  for line in train_loss_series.items():
+    axs[0, 1].plot(line[1], label=line[0])
   axs[0, 1].set_title("Training Loss")
+  axs[0, 1].set_xlabel("Epoch")
+  axs[0, 1].set_ylabel("Loss")
+  axs[0, 1].legend()
 
-  axs[1, 0].plot(test_acc_history)
+  for line in test_acc_series.items():
+    axs[1, 0].plot(line[1], label=line[0])
   axs[1, 0].set_title("Validation Accuracy")
+  axs[1, 0].set_xlabel("Epoch")
+  axs[1, 0].set_ylabel("Accuracy")
+  axs[1, 0].legend()
 
-  axs[1, 1].plot(test_loss_history)
+  for line in test_loss_series.items():
+    axs[1, 1].plot(line[1], label=line[0])
   axs[1, 1].set_title("Validation Loss")
+  axs[1, 1].set_xlabel("Epoch")
+  axs[1, 1].set_ylabel("Loss")
+  axs[1, 1].legend()
 
 def plot_accuracy(train_history, val_history):
   _= plt.plot(train_history)
