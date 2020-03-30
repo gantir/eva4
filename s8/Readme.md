@@ -5,6 +5,7 @@
 
 Achieved 87.98% accuracy in 20 epochs
 
+All the methods are in a separate python library. This library can be found at [evalib](https://github.com/gantir/evalib/tree/develop).
 
 ```
 0%|          | 0/782 [00:00<?, ?it/s]Epoch: 1
