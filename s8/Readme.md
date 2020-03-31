@@ -5,6 +5,7 @@
 
 Achieved 87.98% accuracy in 20 epochs
 
+All the methods are in a separate python library. This library can be found at [evalib](https://github.com/gantir/evalib/tree/develop).
 
 ```
 0%|          | 0/782 [00:00<?, ?it/s]Epoch: 1
@@ -146,3 +147,5 @@ Batch Id/Size: 782/50000, Training Loss: 0.14866513, Training Accuracy: 93.1800%
 100%|██████████| 157/157 [00:03<00:00, 46.74it/s]
 Batch Id/Size: 157/10000, Test Loss: 0.00634952, Test Accuracy: 87.9800%
 ```
+
+![ Accuracy and Loss](https://github.com/gantir/eva4/raw/develop/s8/aritfacts/s8.png)
