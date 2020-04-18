@@ -157,3 +157,8 @@ Batch Id/Size: 782/50000, Training Loss: 0.03087875, Training Accuracy: 96.1580%
 Batch Id/Size: 157/10000, Test Loss: 0.00526776, Test Accuracy: 89.8400%
 ```
 
+![ Accuracy and Loss](https://github.com/gantir/eva4/raw/develop/s10/artifacts/acc-loss.png)
+
+![Mis Classified Images](https://github.com/gantir/eva4/raw/develop/s10/artifacts/misclassified.png)
+
+![Grad Cam Output](https://github.com/gantir/eva4/raw/develop/s10/artifacts/grad-cam.png)
