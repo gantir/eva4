@@ -96,7 +96,6 @@ def rename_fg_files(src_dir, dest_img_dir):
     fg_map_file = csv.writer(f,lineterminator=os.linesep, quoting=csv.QUOTE_ALL)
     fg_map_file.writerows(class_img)
 
-
 def generate_mask(src_img_dir, dest_img_dir):
   img_files = sorted(os.listdir(src_img_dir))
   for img in img_files:
