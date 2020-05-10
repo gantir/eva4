@@ -7,7 +7,7 @@
       - __Downloaded Images__:[link](https://drive.google.com/drive/u/0/folders/1acl9qqiut6JkRKThWtqIEmWEaipXfgVq)
         - Kind: jgp images. (mostly square)
         - Path: data/bg/original
-        - Size: 33MB
+        - Size: 24MB
       - __Altered Images__:[link](https://drive.google.com/drive/u/0/folders/1S9syiGBus-q1LwSaO_cCSLvb9GSyhd8e)
         - Transformation: RGB(224*224*3), Crop
         - Path: data/bg/altered
@@ -16,29 +16,29 @@
       - __Downloaded Images__:[link](https://drive.google.com/drive/u/0/folders/16W5OL6HTgWf7MEytaQGG6t9pvETQEtd8)
         - Kind: png images.
         - Path: data/fg/original
-        - Size: 99.8MB
+        - Size: 107MB
         - Stats:
       - __Altered Images__:[link](https://drive.google.com/drive/u/0/folders/1CihnYUE2rhz111IKBkxhPGCe56yyVUuT)
         - Transformation: RGB+Alpha, Scale (maxwidth 100), Crop
         - Path: data/fg/altered
-        - Size: 807KB
+        - Size: 1MB
         - Stats:
       - __Mask Images__:[link](https://drive.google.com/drive/u/0/folders/1FUKPwQSyWMN78pJO1-bpNx4yoqOXZV-V)
         - Transformation: Python program using opencv library
         - Path: data/fg/mask
-        - Size: 414KB
+        - Size: 106KB
         - Stats:
     - __Generated Images__: These files were generated using a program where the files are divided among different folders and zipped in memory. Then these files are copied to google drive
       - Colab Notebook - [link](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
       - __Background - Foreground + Flip__: 400K Images:
         - Transformation: Pasted foreground images, foreground(flipped) images at 20 different positions
         - Path: data/generated/bg-fg
-        - Size: 2.34GB
+        - Size: 4.1GB (Zipped)
         - Stats:
       - __Background - Foreground Mask__: 400K Images:
         - Transformation: Pasted mask on black background images and the foreground mask flipped at 20 different positions
         - Path: data/generated/bg-fg-mask
-        - Size: 2.34GB
+        - Size: 1.2GB (Zipped)
         - Stats:
     - __Depth Images__: The way this is accomplished is the whole foreground on background dataset is downloaded as a zip from google drive. This is then looped through one bacground image at a time (ie. 4000 images) to generate the depth images.
         - Colab Notebook - [link](https://github.com/gantir/eva4/blob/develop/s14-15/src/depth_image_gen.ipynb)
