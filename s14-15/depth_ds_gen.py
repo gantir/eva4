@@ -78,7 +78,8 @@ def rename_bg_files(src_img_dir, dest_img_dir):
     os.rename(src_img_path, dest_image_path)
 
 def rename_fg_files(src_dir, dest_img_dir):
-  classes = ['bird','boat','car','cat','cow','dog','person']
+  # classes = ['bird','boat','car','cat','cow','dog','person']
+  classes = ['person']
   img_files = []
   for cl in classes:
     for img in os.listdir(os.path.join(src_dir,cl)):
@@ -108,8 +109,8 @@ def generate_mask(src_img_dir, dest_img_dir):
 
 def generate_images(source, dest):
   logger.debug("Starting to generate Images")
-  bg_images = os.listdir(source['bg'])
-  fg_images = os.listdir(source['fg'])
+  bg_images = sorted(os.listdir(source['bg']))
+  fg_images = sorted(os.listdir(source['fg']))
   black_image = Image.open(source['black'])
   for bg_image_name in bg_images:
     logger.debug("Background Image : {}".format(bg_image_name))
@@ -122,16 +123,17 @@ def generate_images(source, dest):
       fg_mask_image = Image.open(os.path.join(source['fg-mask'], fg_image_name)).convert('RGBA')
       fg_mask_image_flip = ImageOps.mirror(fg_mask_image)
       for placement in range(1,21):
-        x1,y1 = random.randint(1,80), random.randint(1,80)
+        x1,y1 = random.randint(1,160), random.randint(1,160)
         bg_fg = copy.deepcopy(bg_image)
         mask = copy.deepcopy(black_image)
-        bg_fg_flip = copy.deepcopy(bg_image)
-        mask_flip = copy.deepcopy(black_image)
-
         bg_fg.paste(fg_image, (x1,y1), fg_image)
         mask.paste(fg_mask_image, (x1,y1), fg_mask_image)
-        bg_fg_flip.paste(fg_image_flip, (x1,y1), fg_image_flip)
-        mask_flip.paste(fg_mask_image_flip, (x1,y1), fg_mask_image_flip)
+
+        x2,y2 = random.randint(1,160), random.randint(1,160)
+        bg_fg_flip = copy.deepcopy(bg_image)
+        mask_flip = copy.deepcopy(black_image)
+        bg_fg_flip.paste(fg_image_flip, (x2,y2), fg_image_flip)
+        mask_flip.paste(fg_mask_image_flip, (x2,y2), fg_mask_image_flip)
 
         bg_fg.save(os.path.join(dest,"bg-fg/bg-{}-fg-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
         mask.save(os.path.join(dest,"bg-fg-mask/bg-{}-fg-mask-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
@@ -140,23 +142,27 @@ def generate_images(source, dest):
 
 if __name__ == "__main__":
     # download_images('img_src.txt','images/bg/original')
+
     # rename_bg_files('/Users/projects/Downloads/s14-15/images/bg/roads','/Users/projects/Downloads/s14-15/images/bg/original')
-    # rename_fg_files('/Users/projects/Downloads/s14-15/images/fg/temp/','/Users/projects/Downloads/s14-15/images/fg/original/')
 
     # bg_img_files = sorted(os.listdir('/Users/projects/Downloads/s14-15/images/bg/original/'))
     # for img in bg_img_files:
     #   alter_bg_image('/Users/projects/Downloads/s14-15/images/bg/original/', img,'/Users/projects/Downloads/s14-15/images/bg/altered/')
+
+    # rename_fg_files('/Users/projects/Downloads/s14-15/images/fg/actual/','/Users/projects/Downloads/s14-15/images/fg/original/')
 
     # fg_img_files = sorted(os.listdir('/Users/projects/Downloads/s14-15/images/fg/original/'))
     # for i, img in enumerate(fg_img_files):
     #   alter_fg_image('/Users/projects/Downloads/s14-15/images/fg/original/', img,'/Users/projects/Downloads/s14-15/images/fg/altered/')
 
     # generate_mask('/Users/projects/Downloads/s14-15/images/fg/altered/','/Users/projects/Downloads/s14-15/images/fg/mask')
-    cur_dir = os.curdir
-    generate_images({
-      'bg': os.path.join(os.curdir,'images/bg/altered/'),
-      'fg': os.path.join(os.curdir,'images/fg/altered/'),
-      'fg-mask':os.path.join(os.curdir,'images/fg/mask/'),
-      'black': os.path.join(os.curdir,'images/black.jpg')
-    }, dest= os.path.join(os.curdir,'images/generated')
-    )
+
+    # cur_dir = os.curdir
+    # generate_images({
+    #   'bg': os.path.join(os.curdir,'images/bg/altered/'),
+    #   'fg': os.path.join(os.curdir,'images/fg/altered/'),
+    #   'fg-mask':os.path.join(os.curdir,'images/fg/mask/'),
+    #   'black': os.path.join(os.curdir,'images/black.jpg')
+    #   }
+    #   , dest= os.path.join(os.curdir,'images/generated')
+    # )
