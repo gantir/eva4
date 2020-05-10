@@ -10,6 +10,7 @@ import cv2
 import random
 import copy
 import logging
+import zipfile
 
 logging.basicConfig(filename='logs/debug.log',
   filemode='a',
@@ -106,28 +107,48 @@ def generate_mask(src_img_dir, dest_img_dir):
   img_files = sorted(os.listdir(src_img_dir))
   for img in img_files:
     # https://stackoverflow.com/questions/28430904/set-numpy-array-elements-to-zero-if-they-are-above-a-specific-threshold
+    # https://codereview.stackexchange.com/questions/184044/processing-an-image-to-extract-green-screen-mask
     image = cv2.imread(os.path.join(src_img_dir,img))
     white_indicies = image >= 1
     image[white_indicies] = 255
     dest_image_path = os.path.join(dest_img_dir, img)
     cv2.imwrite(dest_image_path, (image).astype(np.uint8))
 
-def generate_images(source, dest, max_rand=360):
+def generate_images(source, dest, max_rand=360, save_image_files=False):
   logger.debug("Starting to generate Images")
   bg_images = sorted(os.listdir(source['bg']))
   fg_images = sorted(os.listdir(source['fg']))
   black_image = Image.open(source['black'])
+  black_image = ImageOps.fit(black_image,(448,448), method=Image.ANTIALIAS)
+
+  bg_fg_zip = zipfile.ZipFile(os.path.join(dest,'bg_fg.zip'), mode='a', compression=zipfile.ZIP_STORED)
+  bg_fg_mask_zip = zipfile.ZipFile(os.path.join(dest,'bg_fg_mask.zip'), mode='a', compression=zipfile.ZIP_STORED)
+
   for bg_image_name in bg_images:
     logger.debug("Background Image : {}".format(bg_image_name))
     bg_image = Image.open(os.path.join(source['bg'], bg_image_name))
     for fg_image_name in fg_images:
       logger.debug("Foreground Image : {}".format(fg_image_name))
       # https://stackoverflow.com/questions/7911451/pil-convert-png-or-gif-with-transparency-to-jpg-without
-      # https://codereview.stackexchange.com/questions/184044/processing-an-image-to-extract-green-screen-mask
       fg_image = Image.open(os.path.join(source['fg'], fg_image_name)).convert('RGBA')
-      fg_image_flip = ImageOps.mirror(fg_image)
       fg_mask_image = Image.open(os.path.join(source['fg-mask'], fg_image_name)).convert('RGBA')
+
+      fg_image_flip = ImageOps.mirror(fg_image)
       fg_mask_image_flip = ImageOps.mirror(fg_mask_image)
+
+      partial_dest_dir = os.path.join(
+          "bg-{}".format(bg_image_name.split('.')[0]),
+          "fg-{}".format(fg_image_name.split('.')[0])
+      )
+      if save_image_files:
+        dest_image_path = os.path.join(dest,"bg-fg", partial_dest_dir)
+        dest_mask_path = os.path.join(dest,"bg-fg-mask", partial_dest_dir)
+        os.makedirs(dest_image_path, exist_ok=True)
+        os.makedirs(dest_mask_path, exist_ok=True)
+      else:
+        dest_temp = os.path.join(dest,"temp")
+        os.makedirs(dest_temp, exist_ok=True)
+
       for placement in range(1,21):
         x1,y1 = random.randint(1,max_rand), random.randint(1,max_rand)
         bg_fg = copy.deepcopy(bg_image)
@@ -141,10 +162,57 @@ def generate_images(source, dest, max_rand=360):
         bg_fg_flip.paste(fg_image_flip, (x2,y2), fg_image_flip)
         mask_flip.paste(fg_mask_image_flip, (x2,y2), fg_mask_image_flip)
 
-        bg_fg.save(os.path.join(dest,"bg-fg/bg-{}-fg-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
-        mask.save(os.path.join(dest,"bg-fg-mask/bg-{}-fg-mask-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
-        bg_fg_flip.save(os.path.join(dest,"bg-fg-flip/bg-{}-fg-flip-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
-        mask_flip.save(os.path.join(dest,"bg-fg-mask-flip/bg-{}-fg-mask-flip-{}-{}.jpg".format(bg_image_name.split('.')[0],fg_image_name.split('.')[0],placement)))
+        if save_image_files:
+          bg_fg.save(os.path.join(dest_image_path,"{}-{}-{}.jpg".format(placement,x1,y1)))
+          mask.save(os.path.join(dest_mask_path,"{}-{}-{}.jpg".format(placement,x1,y1)))
+
+          bg_fg_flip.save(os.path.join(dest_image_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)))
+          mask_flip.save(os.path.join(dest_mask_path, "{}-{}-{}-flip.jpg".format(placement,x2,y2)))
+
+          bg_fg_zip.write(
+            os.path.join(dest_image_path,"{}-{}-{}.jpg".format(placement,x1,y1)),
+            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
+          )
+          bg_fg_zip.write(
+            os.path.join(dest_image_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)),
+            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
+          )
+
+          bg_fg_mask_zip.write(
+            os.path.join(dest_mask_path,"{}-{}-{}.jpg".format(placement,x1,y1)),
+            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
+          )
+          bg_fg_mask_zip.write(
+            os.path.join(dest_mask_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)),
+            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
+          )
+        else:
+          bg_fg.save(os.path.join(dest_temp,"bf.jpg"))
+          mask.save(os.path.join(dest_temp,"bf-mask.jpg"))
+
+          bg_fg_flip.save(os.path.join(dest_temp,"bf-flip.jpg"))
+          mask_flip.save(os.path.join(dest_temp,"bf-mask-flip.jpg"))
+
+          bg_fg_zip.write(
+            os.path.join(os.path.join(dest_temp,"bf.jpg")),
+            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
+          )
+          bg_fg_zip.write(
+            os.path.join(os.path.join(dest_temp,"bf-flip.jpg")),
+            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
+          )
+
+          bg_fg_mask_zip.write(
+            os.path.join(os.path.join(dest_temp,"bf-mask.jpg")),
+            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
+          )
+          bg_fg_mask_zip.write(
+            os.path.join(os.path.join(dest_temp,"bf-mask-flip.jpg")),
+            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
+          )
+
+  bg_fg_zip.close()
+  bg_fg_mask_zip.close()
 
 if __name__ == "__main__":
     # download_images('img_src.txt','images/bg/original')
