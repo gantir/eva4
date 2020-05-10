@@ -4,54 +4,46 @@
 1. __Images Details__
     - __Google Drive__ [link](https://drive.google.com/drive/folders/1GFFQp6Y-6sbVUe7X0nTiwEHXScpzdear?usp=sharing)
     - __Background Images__: 100 Images
-      - __Downloaded Images__:
+      - __Downloaded Images__:[link](https://drive.google.com/drive/u/0/folders/1acl9qqiut6JkRKThWtqIEmWEaipXfgVq)
         - Kind: jgp images. (mostly square)
-        - Path: images/bg/original
+        - Path: data/bg/original
         - Size: 33MB
-      - __Altered Images__:
-        - Transformation: Grayscale, Scale (224*224), Crop
-        - Path: images/bg/altered
+      - __Altered Images__:[link](https://drive.google.com/drive/u/0/folders/1S9syiGBus-q1LwSaO_cCSLvb9GSyhd8e)
+        - Transformation: RGB(224*224*3), Crop
+        - Path: data/bg/altered
         - Size: 1.1MB
     - __Foreground Images__: 100 Images
-      - __Downloaded Images__:
+      - __Downloaded Images__:[link](https://drive.google.com/drive/u/0/folders/16W5OL6HTgWf7MEytaQGG6t9pvETQEtd8)
         - Kind: png images.
-        - Path: images/fg/original
+        - Path: data/fg/original
         - Size: 99.8MB
         - Stats:
-      - __Altered Images__:
-        - Transformation: Grayscale, Scale (maxwidth 100), Crop
-        - Path: images/bg/altered
+      - __Altered Images__:[link](https://drive.google.com/drive/u/0/folders/1CihnYUE2rhz111IKBkxhPGCe56yyVUuT)
+        - Transformation: RGB+Alpha, Scale (maxwidth 100), Crop
+        - Path: data/fg/altered
         - Size: 807KB
         - Stats:
-      - __Mask Images__:
+      - __Mask Images__:[link](https://drive.google.com/drive/u/0/folders/1FUKPwQSyWMN78pJO1-bpNx4yoqOXZV-V)
         - Transformation: Python program using opencv library
-        - Path: images/bg/mask
+        - Path: data/fg/mask
         - Size: 414KB
         - Stats:
-    - __Generated Images__:
-      - __Background - Foreground__: 200K Images:
-        - Transformation: Pasted foreground images at 20 different positions
-        - Path: images/generated/bg-fg
+    - __Generated Images__: These files were generated using a program where the files are divided among different folders and zipped in memory. Then these files are copied to google drive
+      - Colab Notebook - [link](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
+      - __Background - Foreground + Flip__: 400K Images:
+        - Transformation: Pasted foreground images, foreground(flipped) images at 20 different positions
+        - Path: data/generated/bg-fg
         - Size: 2.34GB
         - Stats:
-      - __Background - Foreground Flip__: 200K Images:
-        - Transformation: Pasted foreground(flipped) images at 20 different positions
-        - Path: images/generated/bg-fg-flip
+      - __Background - Foreground Mask__: 400K Images:
+        - Transformation: Pasted mask on black background images and the foreground mask flipped at 20 different positions
+        - Path: data/generated/bg-fg-mask
         - Size: 2.34GB
         - Stats:
-      - __Background - Foreground Mask__: 200K Images:
-        - Transformation: Pasted mask on black background images at 20 different positions
-        - Path: images/generated/bg-fg-mask
-        - Size: 2.34GB
-        - Stats:
-      - __Background - Foreground Mask Flip__: 200K Images:
-        - Transformation: Pasted mask on black background(flipped) images at 20 different positions
-        - Path: images/generated/bg-fg-mask-flip
-        - Size: 2.34GB
-        - Stats:
-    - __Depth Images__:
-        - Transformation:
-        - Path:
+    - __Depth Images__: The way this is accomplished is the whole foreground on background dataset is downloaded as a zip from google drive. This is then looped through one bacground image at a time (ie. 4000 images) to generate the depth images.
+        - Colab Notebook - [link](https://github.com/gantir/eva4/blob/develop/s14-15/src/depth_image_gen.ipynb)
+        - Transformation: Called the [DenseDepth](https://github.com/gantir/DenseDepth) model. A few changes were made to make it compatible with TF2.0. Also to be able to save individual depth images.
+        - Path: data/generated/bg-fg-depth
         - Size:
         - Stats:
 2. Images of the dataset
