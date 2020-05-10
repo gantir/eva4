@@ -41,30 +41,35 @@ def download_images(img_url_file: str, img_dest: str):
         print("Error: Error downloading as {} image {}".format(dest_image_name, img_url))
         pass
 
-def alter_bg_image(src_img_dir, src_img_filename, dest_img_folder):
+def alter_bg_image(src_img_dir: str, src_img_filename: str, dest_img_folder: str, image_size=(224,224), convert_gray_scale=False ):
   image_path = os.path.join(src_img_dir,src_img_filename)
   org_img = Image.open(image_path)
-  gi = ImageOps.grayscale(org_img)
-  altered_image = ImageOps.fit(gi,(224,224), method=Image.ANTIALIAS)
+  if convert_gray_scale:
+    org_img = ImageOps.grayscale(org_img)
+  altered_image = ImageOps.fit(org_img,image_size, method=Image.ANTIALIAS)
   # altered_image.show()
   altered_image.save(os.path.join(dest_img_folder,src_img_filename))
 
-def alter_fg_image(src_img_dir, src_img_filename, dest_img_folder):
+def alter_fg_image(src_img_dir, src_img_filename, dest_img_folder, dest_img_folder_gray, max_size=200):
   image_path = os.path.join(src_img_dir,src_img_filename)
-  MAX_SIZE = 100
   try:
     # https://pillow.readthedocs.io/en/latest/handbook/concepts.html#modes
-    org_img = Image.open(image_path).convert('LA')
+    org_img = Image.open(image_path)
+    org_img_gray = org_img.convert('LA')
+
     width,height = org_img.size
     ratio = width/height
-    new_width = MAX_SIZE
-    new_height = ceil(MAX_SIZE/ratio)
+    new_width = max_size
+    new_height = ceil(max_size/ratio)
     if width < height:
-      new_width = ceil(MAX_SIZE*ratio)
-      new_height = MAX_SIZE
+      new_width = ceil(max_size*ratio)
+      new_height = max_size
     # print(ratio,src_img_filename,[width,height],[new_width,new_height])
     altered_image = ImageOps.fit(org_img,(new_width,new_height), method=Image.ANTIALIAS)
     altered_image.save(os.path.join(dest_img_folder,src_img_filename))
+
+    altered_image_gray = ImageOps.fit(org_img_gray,(new_width,new_height), method=Image.ANTIALIAS)
+    altered_image_gray.save(os.path.join(dest_img_folder_gray,src_img_filename))
   except Exception as e:
     print(e)
     pass
@@ -107,7 +112,7 @@ def generate_mask(src_img_dir, dest_img_dir):
     dest_image_path = os.path.join(dest_img_dir, img)
     cv2.imwrite(dest_image_path, (image).astype(np.uint8))
 
-def generate_images(source, dest):
+def generate_images(source, dest, max_rand=360):
   logger.debug("Starting to generate Images")
   bg_images = sorted(os.listdir(source['bg']))
   fg_images = sorted(os.listdir(source['fg']))
@@ -118,18 +123,19 @@ def generate_images(source, dest):
     for fg_image_name in fg_images:
       logger.debug("Foreground Image : {}".format(fg_image_name))
       # https://stackoverflow.com/questions/7911451/pil-convert-png-or-gif-with-transparency-to-jpg-without
+      # https://codereview.stackexchange.com/questions/184044/processing-an-image-to-extract-green-screen-mask
       fg_image = Image.open(os.path.join(source['fg'], fg_image_name)).convert('RGBA')
       fg_image_flip = ImageOps.mirror(fg_image)
       fg_mask_image = Image.open(os.path.join(source['fg-mask'], fg_image_name)).convert('RGBA')
       fg_mask_image_flip = ImageOps.mirror(fg_mask_image)
       for placement in range(1,21):
-        x1,y1 = random.randint(1,160), random.randint(1,160)
+        x1,y1 = random.randint(1,max_rand), random.randint(1,max_rand)
         bg_fg = copy.deepcopy(bg_image)
         mask = copy.deepcopy(black_image)
         bg_fg.paste(fg_image, (x1,y1), fg_image)
         mask.paste(fg_mask_image, (x1,y1), fg_mask_image)
 
-        x2,y2 = random.randint(1,160), random.randint(1,160)
+        x2,y2 = random.randint(1,max_rand), random.randint(1,max_rand)
         bg_fg_flip = copy.deepcopy(bg_image)
         mask_flip = copy.deepcopy(black_image)
         bg_fg_flip.paste(fg_image_flip, (x2,y2), fg_image_flip)
@@ -147,15 +153,15 @@ if __name__ == "__main__":
 
     # bg_img_files = sorted(os.listdir('/Users/projects/Downloads/s14-15/images/bg/original/'))
     # for img in bg_img_files:
-    #   alter_bg_image('/Users/projects/Downloads/s14-15/images/bg/original/', img,'/Users/projects/Downloads/s14-15/images/bg/altered/')
+    #   alter_bg_image('/Users/projects/Downloads/s14-15/images/bg/original/', img,'/Users/projects/Downloads/s14-15/images/bg/altered/', (448,448))
 
     # rename_fg_files('/Users/projects/Downloads/s14-15/images/fg/actual/','/Users/projects/Downloads/s14-15/images/fg/original/')
 
     # fg_img_files = sorted(os.listdir('/Users/projects/Downloads/s14-15/images/fg/original/'))
     # for i, img in enumerate(fg_img_files):
-    #   alter_fg_image('/Users/projects/Downloads/s14-15/images/fg/original/', img,'/Users/projects/Downloads/s14-15/images/fg/altered/')
+    #   alter_fg_image('/Users/projects/Downloads/s14-15/images/fg/original/', img,'/Users/projects/Downloads/s14-15/images/fg/altered/','/Users/projects/Downloads/s14-15/images/fg/altered-gray/')
 
-    # generate_mask('/Users/projects/Downloads/s14-15/images/fg/altered/','/Users/projects/Downloads/s14-15/images/fg/mask')
+    # generate_mask('/Users/projects/Downloads/s14-15/images/fg/altered-gray/','/Users/projects/Downloads/s14-15/images/fg/mask')
 
     # cur_dir = os.curdir
     # generate_images({
