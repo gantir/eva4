@@ -114,12 +114,12 @@ def generate_mask(src_img_dir, dest_img_dir):
     dest_image_path = os.path.join(dest_img_dir, img)
     cv2.imwrite(dest_image_path, (image).astype(np.uint8))
 
-def generate_images(source, dest, max_rand=360, save_image_files=False):
+def generate_images(source, dest, max_rand=360, image_size=(448,448), save_image_files=False):
   logger.debug("Starting to generate Images")
   bg_images = sorted(os.listdir(source['bg']))
   fg_images = sorted(os.listdir(source['fg']))
   black_image = Image.open(source['black'])
-  black_image = ImageOps.fit(black_image,(448,448), method=Image.ANTIALIAS)
+  black_image = ImageOps.fit(black_image, image_size, method=Image.ANTIALIAS)
 
   bg_fg_zip = zipfile.ZipFile(os.path.join(dest,'bg_fg.zip'), mode='a', compression=zipfile.ZIP_STORED)
   bg_fg_mask_zip = zipfile.ZipFile(os.path.join(dest,'bg_fg_mask.zip'), mode='a', compression=zipfile.ZIP_STORED)
@@ -210,12 +210,14 @@ if __name__ == "__main__":
 
     # generate_mask('/Users/projects/Downloads/s14-15/images/fg/altered-gray/','/Users/projects/Downloads/s14-15/images/fg/mask')
 
-    # cur_dir = os.curdir
-    # generate_images({
-    #   'bg': os.path.join(os.curdir,'images/bg/altered/'),
-    #   'fg': os.path.join(os.curdir,'images/fg/altered/'),
-    #   'fg-mask':os.path.join(os.curdir,'images/fg/mask/'),
-    #   'black': os.path.join(os.curdir,'images/black.jpg')
-    #   }
-    #   , dest= os.path.join(os.curdir,'images/generated')
-    # )
+    cur_dir = os.curdir
+    generate_images(
+      {
+        'bg': os.path.join(os.curdir,'images/bg/altered/'),
+        'fg': os.path.join(os.curdir,'images/fg/altered/'),
+        'fg-mask':os.path.join(os.curdir,'images/fg/mask/'),
+        'black': os.path.join(os.curdir,'images/black.jpg')
+      },
+      dest= os.path.join(os.curdir,'images/generated'),
+      max_rand=160, image_size=(224,224)
+    )
