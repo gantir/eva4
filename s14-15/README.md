@@ -28,7 +28,7 @@
         - Path: data/fg/mask
         - Size: 106KB
         - Stats:
-    - __Generated Images__: These files were generated using a program where the files are divided among different folders and zipped in memory. Then these files are copied to google drive
+    - __Generated Images__:[link](https://drive.google.com/drive/u/0/folders/10syKH_UPkwx6cAP83UrVXbwPZcf30o0O) These files were generated using a program where the files are divided among different folders and zipped in memory. Then these files are copied to google drive
       - Colab Notebook - [link](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
       - __Background - Foreground + Flip__: 400K Images:
         - Transformation: Pasted foreground images, foreground(flipped) images at 20 different positions
