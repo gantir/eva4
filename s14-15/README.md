@@ -66,3 +66,8 @@
 4. [Jupyter notebook to dataset generation steps](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
 5. [Jupyter notebook to generate Depth Images](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
 6. [Jupyter notebook to calculate stats of the images generated](https://github.com/gantir/eva4/blob/develop/s14-15/src/stats_gen.ipynb)
+
+## Hacks that helped manage the number of images.
+
+- All bg and fg images are name img%4d.jgp and img%4d.png respectively. Any generated image is named to be a combination of these either in the folder structure they belong to. This helps in ability to process only 1 bg image, 1 fg image combination or what so ever.
+- Taking cue from the telegram conversation, have zipped all files in memory. To be able to handle better, have split this across bg-fg, bg-fg-mask, bg-fg-depth.
