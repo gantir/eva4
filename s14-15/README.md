@@ -2,7 +2,7 @@
 # Image Statistics
 
 1. __Images Details__
-    - __Google Drive__ [link]()
+    - __Google Drive__ [link](https://drive.google.com/drive/folders/1GFFQp6Y-6sbVUe7X0nTiwEHXScpzdear?usp=sharing)
     - __Background Images__: 100 Images
       - __Downloaded Images__:
         - Kind: jgp images. (mostly square)
