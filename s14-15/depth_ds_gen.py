@@ -140,14 +140,15 @@ def generate_images(source, dest, max_rand=360, save_image_files=False):
           "bg-{}".format(bg_image_name.split('.')[0]),
           "fg-{}".format(fg_image_name.split('.')[0])
       )
+
+      dest_image_path = os.path.join(dest,"temp")
+      dest_mask_path = os.path.join(dest,"temp-mask")
       if save_image_files:
         dest_image_path = os.path.join(dest,"bg-fg", partial_dest_dir)
         dest_mask_path = os.path.join(dest,"bg-fg-mask", partial_dest_dir)
-        os.makedirs(dest_image_path, exist_ok=True)
-        os.makedirs(dest_mask_path, exist_ok=True)
-      else:
-        dest_temp = os.path.join(dest,"temp")
-        os.makedirs(dest_temp, exist_ok=True)
+
+      os.makedirs(dest_image_path, exist_ok=True)
+      os.makedirs(dest_mask_path, exist_ok=True)
 
       for placement in range(1,21):
         x1,y1 = random.randint(1,max_rand), random.randint(1,max_rand)
@@ -162,54 +163,32 @@ def generate_images(source, dest, max_rand=360, save_image_files=False):
         bg_fg_flip.paste(fg_image_flip, (x2,y2), fg_image_flip)
         mask_flip.paste(fg_mask_image_flip, (x2,y2), fg_mask_image_flip)
 
-        if save_image_files:
-          bg_fg.save(os.path.join(dest_image_path,"{}-{}-{}.jpg".format(placement,x1,y1)))
-          mask.save(os.path.join(dest_mask_path,"{}-{}-{}.jpg".format(placement,x1,y1)))
+        bg_fg_file_name = "{}.jpg".format(placement)
+        bg_fg_flip_file_name = "{}-flip.jpg".format(placement)
 
-          bg_fg_flip.save(os.path.join(dest_image_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)))
-          mask_flip.save(os.path.join(dest_mask_path, "{}-{}-{}-flip.jpg".format(placement,x2,y2)))
+        bg_fg.save(os.path.join(dest_image_path, bg_fg_file_name ))
+        mask.save(os.path.join(dest_mask_path, bg_fg_file_name))
 
-          bg_fg_zip.write(
-            os.path.join(dest_image_path,"{}-{}-{}.jpg".format(placement,x1,y1)),
-            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
-          )
-          bg_fg_zip.write(
-            os.path.join(dest_image_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)),
-            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
-          )
+        bg_fg_flip.save(os.path.join(dest_image_path, bg_fg_flip_file_name))
+        mask_flip.save(os.path.join(dest_mask_path, bg_fg_flip_file_name))
 
-          bg_fg_mask_zip.write(
-            os.path.join(dest_mask_path,"{}-{}-{}.jpg".format(placement,x1,y1)),
-            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
-          )
-          bg_fg_mask_zip.write(
-            os.path.join(dest_mask_path,"{}-{}-{}-flip.jpg".format(placement,x2,y2)),
-            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
-          )
-        else:
-          bg_fg.save(os.path.join(dest_temp,"bf.jpg"))
-          mask.save(os.path.join(dest_temp,"bf-mask.jpg"))
+        bg_fg_zip.write(
+          os.path.join(dest_image_path, bg_fg_file_name),
+          arcname= os.path.join("bg-fg",partial_dest_dir,bg_fg_file_name)
+        )
+        bg_fg_zip.write(
+          os.path.join(dest_image_path, bg_fg_flip_file_name),
+          arcname= os.path.join("bg-fg",partial_dest_dir, bg_fg_flip_file_name)
+        )
 
-          bg_fg_flip.save(os.path.join(dest_temp,"bf-flip.jpg"))
-          mask_flip.save(os.path.join(dest_temp,"bf-mask-flip.jpg"))
-
-          bg_fg_zip.write(
-            os.path.join(os.path.join(dest_temp,"bf.jpg")),
-            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
-          )
-          bg_fg_zip.write(
-            os.path.join(os.path.join(dest_temp,"bf-flip.jpg")),
-            arcname= os.path.join("bg-fg",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
-          )
-
-          bg_fg_mask_zip.write(
-            os.path.join(os.path.join(dest_temp,"bf-mask.jpg")),
-            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}.jpg".format(placement,x1,y1))
-          )
-          bg_fg_mask_zip.write(
-            os.path.join(os.path.join(dest_temp,"bf-mask-flip.jpg")),
-            arcname= os.path.join("bg-fg-mask",partial_dest_dir,"{}-{}-{}-flip.jpg".format(placement,x2,y2))
-          )
+        bg_fg_mask_zip.write(
+          os.path.join(dest_mask_path, bg_fg_file_name),
+          arcname= os.path.join("bg-fg-mask",partial_dest_dir, bg_fg_file_name)
+        )
+        bg_fg_mask_zip.write(
+          os.path.join(dest_mask_path, bg_fg_flip_file_name),
+          arcname= os.path.join("bg-fg-mask",partial_dest_dir, bg_fg_flip_file_name)
+        )
 
   bg_fg_zip.close()
   bg_fg_mask_zip.close()
