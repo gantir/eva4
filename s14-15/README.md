@@ -63,6 +63,6 @@
    7. __generate_mask__: Used to generate mask for the foreground images. It takes the foreground png image and generates a black(transparent area) and white(actual object past). The logic used is to take the pixels which were not transparent and make them white. The rest of the image was made black
    8. __generate_images__: This loops through all the background and foreground images and generates images with overlay of foreground over background, foreground mask over black background etc.
    9. Depth Images
-4. Link to code to do the above steps (Not an ipynb notebook)
-5. Jupyter notebook to generate Depth Images
-6. Jupyter notebook to calculate stats of the images generated
+4. [Jupyter notebook to dataset generation steps](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
+5. [Jupyter notebook to generate Depth Images](https://github.com/gantir/eva4/blob/develop/s14-15/src/ds_gen.ipynb)
+6. [Jupyter notebook to calculate stats of the images generated](https://github.com/gantir/eva4/blob/develop/s14-15/src/stats_gen.ipynb)
